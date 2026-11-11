@@ -8,13 +8,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/MoeForge/moego/ojson"
 	"github.com/router-for-me/CLIProxyAPI/v8/internal/config"
 	"github.com/router-for-me/CLIProxyAPI/v8/internal/runtime/executor/helps"
 	cliproxyauth "github.com/router-for-me/CLIProxyAPI/v8/sdk/cliproxy/auth"
 	cliproxyexecutor "github.com/router-for-me/CLIProxyAPI/v8/sdk/cliproxy/executor"
 	sdktranslator "github.com/router-for-me/CLIProxyAPI/v8/sdk/translator"
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 // These opaque fixtures test the gateway contract, not Anthropic's classifier
@@ -83,11 +82,11 @@ func TestClaudeExecutor_AutoModeSafeguardsPassthrough(t *testing.T) {
 						"Anthropic-Beta": {"dangerous-tool-use-2026-09-03,future-safeguard-beta-2099-01-01"},
 					}}
 					if profile.native {
-						opts.Headers.Set("User-Agent", "claude-cli/2.1.280 (external, cli)")
+						opts.Headers.Set("User-Agent", "claude-cli/2.1.321 (external, cli)")
 						opts.Headers.Set("X-App", "cli")
 						opts.Headers.Set("Anthropic-Beta", "claude-code-20250219,"+opts.Headers.Get("Anthropic-Beta"))
 						var err error
-						requestBody, err = sjson.SetBytes(requestBody, "metadata.user_id", `{"device_id":"0000000000000000000000000000000000000000000000000000000000000000","account_uuid":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","session_id":"11111111-2222-4333-8444-555555555555"}`)
+						requestBody, err = ojson.SetBytes(requestBody, "metadata.user_id", `{"device_id":"0000000000000000000000000000000000000000000000000000000000000000","account_uuid":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","session_id":"11111111-2222-4333-8444-555555555555"}`)
 						if err != nil {
 							t.Fatal(err)
 						}
@@ -119,14 +118,14 @@ func TestClaudeExecutor_AutoModeSafeguardsPassthrough(t *testing.T) {
 					if calls != 1 {
 						t.Fatalf("upstream calls = %d, want 1", calls)
 					}
-					if got := gjson.GetBytes(seenBody, "safeguards").Raw; got != safeguards {
+					if got := ojson.GetBytes(seenBody, "safeguards").Raw; got != safeguards {
 						t.Fatalf("safeguards = %s, want %s", got, safeguards)
 					}
-					if !gjson.GetBytes(seenBody, "future_request_field.opaque").Bool() {
+					if !ojson.GetBytes(seenBody, "future_request_field.opaque").Bool() {
 						t.Fatal("unknown request field lost")
 					}
 					for _, path := range []string{"messages.1.content.0.id", "messages.2.content.0.tool_use_id"} {
-						if got := gjson.GetBytes(seenBody, path).String(); got != toolID {
+						if got := ojson.GetBytes(seenBody, path).String(); got != toolID {
 							t.Fatalf("%s = %q, want %q", path, got, toolID)
 						}
 					}
@@ -147,17 +146,17 @@ func TestClaudeExecutor_AutoModeSafeguardsPassthrough(t *testing.T) {
 							t.Fatalf("stream changed: got %s, want %s", output, responseSSE)
 						}
 					} else {
-						if got := gjson.GetBytes(output, "content.0.id").String(); got != toolID {
+						if got := ojson.GetBytes(output, "content.0.id").String(); got != toolID {
 							t.Fatalf("response tool ID = %q", got)
 						}
-						if !gjson.GetBytes(output, "future_response_field.opaque").Bool() {
+						if !ojson.GetBytes(output, "future_response_field.opaque").Bool() {
 							t.Fatal("unknown response field lost")
 						}
 						if verdict {
-							if got := gjson.GetBytes(output, "safeguard_results").Raw; got != results {
+							if got := ojson.GetBytes(output, "safeguard_results").Raw; got != results {
 								t.Fatalf("safeguard_results = %s, want %s", got, results)
 							}
-						} else if gjson.GetBytes(output, "safeguard_results").Exists() {
+						} else if ojson.GetBytes(output, "safeguard_results").Exists() {
 							t.Fatal("proxy fabricated a verdict")
 						}
 					}

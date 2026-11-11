@@ -104,6 +104,7 @@ type reviewedInPlaceByteWrite struct {
 }
 
 var reviewedInPlaceByteWrites = map[string]reviewedInPlaceByteWrite{
+	"sdk/cliproxy/auth/selector_weighted.go":                        {2, "shifts []weightedPoolMember structs containing string references and numeric counters; no byte of a JSON payload is rewritten"},
 	"internal/kvstore/bolt_store.go":                                {1, "copies into a freshly allocated envelope before publication; no no-copy JSON result can alias the destination"},
 	"internal/translator/common/apply_patch_responses.go":           {1, "shifts [][]byte item references in a private output slice; no byte of any JSON payload is rewritten"},
 	"internal/translator/common/vertex_partial_args.go":             {1, "shifts []string object keys to insert a key; no byte of any payload is rewritten"},

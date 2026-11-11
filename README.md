@@ -1,3 +1,23 @@
+# Codedaptive CLIProxyAPI fork
+
+This fork follows upstream **CLIProxyAPI v8.0.67** and retains regression coverage
+for Claude Code auto-mode safeguards. The customized dashboard and quota router
+are maintained separately:
+
+- [Dashboard, spend collector, and subscription planning](https://github.com/codedaptive/Cli-Proxy-API-Management-Center)
+- [Installation guide](https://github.com/codedaptive/Cli-Proxy-API-Management-Center/blob/main/docs/codedaptive-setup.md)
+- [Quota router: desktop affinity, roles, and weekly reserve](https://github.com/codedaptive/quota-router)
+- [Auto-mode behavior and verification](docs/claude-auto-mode.md)
+
+Build this source with the Go version declared in `go.mod`. The original upstream
+instructions follow. Upstream release assets contain the upstream core; fork
+source publication does not imply that a new Codedaptive binary has been released.
+
+Production configuration, credentials, quota history, and local deployment journals
+are intentionally excluded. An upstream merge does not deploy or restart a server.
+
+---
+
 # CLI Proxy API
 
 English | [中文](README_CN.md) | [日本語](README_JA.md)
