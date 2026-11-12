@@ -2,6 +2,9 @@
 
 # CLIProxyAPI — Codedaptive
 
+A fork of [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI), optimized for use with
+**[CodeTeam - CE](https://github.com/codedaptive/codeteam-ce)**.
+
 ### One model gateway for your coding tools and agent teams.
 
 **Connect the accounts. Route the requests. Keep the tools working.**
@@ -13,6 +16,9 @@
 [Start here](#start-here) · [Works with](#works-with) · [Documentation](#documentation) · [Issues](https://github.com/codedaptive/CLIProxyAPI/issues)
 
 </div>
+
+CodeTeam - CE is optional: this fork also works with other compatible clients and
+agent workflows.
 
 Different coding tools expect different model APIs. Accounts have different quotas,
 models, and reset windows. CLIProxyAPI gives those tools a common gateway while
@@ -55,7 +61,7 @@ updated independently:
 
 These Codedaptive projects complement the stack on the agent side:
 
-- **[CodeTeam CE](https://github.com/codedaptive/codeteam-ce)** runs a coordinated
+- **[CodeTeam - CE](https://github.com/codedaptive/codeteam-ce)** runs a coordinated
   team of coding agents. Its agents can use the proxy for model access and the
   router's role names for task-specific model preferences.
 - **[MOOTx01 CE](https://github.com/codedaptive/mootx01-ce)** gives agents persistent
