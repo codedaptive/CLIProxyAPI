@@ -925,7 +925,9 @@ func TestCaptureRequestInfoBoundsZstdExpansionWithoutAConfiguredLimit(t *testing
 // window is past the bound, so the raw bytes are logged and nothing large is allocated.
 func TestCaptureRequestInfoDoesNotDecodeASingleSegmentBomb(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	encoder, errNewWriter := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedBestCompression))
+	// New encoder versions may choose a multi-segment frame by default. This
+	// regression specifically exercises a frame declaring one oversized segment.
+	encoder, errNewWriter := zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedBestCompression), zstd.WithSingleSegment(true))
 	if errNewWriter != nil {
 		t.Fatal(errNewWriter)
 	}
