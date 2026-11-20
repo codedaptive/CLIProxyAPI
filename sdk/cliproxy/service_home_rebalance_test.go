@@ -102,9 +102,13 @@ func (s *rebalanceAdmissionHome) serve(conn net.Conn) {
 		case "HELLO":
 			reply = "%6\r\n$6\r\nserver\r\n$5\r\nredis\r\n$5\r\nproto\r\n:3\r\n$2\r\nid\r\n:1\r\n$4\r\nmode\r\n$10\r\nstandalone\r\n$4\r\nrole\r\n$6\r\nmaster\r\n$7\r\nmodules\r\n*0\r\n"
 		case "GET":
-			payload := "credential-concurrency:\n  lifecycle-config-revision: 1\n  cpa-heartbeat-timeout: 10s\n  cpa-cancel-bound: 5s\n"
+			// These lifecycle fixtures do not exercise plugin sync.
+			payload := "plugins:\n  enabled: false\ncredential-concurrency:\n  lifecycle-config-revision: 1\n  cpa-heartbeat-timeout: 10s\n  cpa-cancel-bound: 5s\n"
 			if args[1] != "config" {
 				payload = "[]"
+				if args[1] == "plugin-sync" {
+					payload = fmt.Sprintf(`{"schema_version":1,"expires_at":%q,"items":[]}`, time.Now().Add(time.Minute).UTC().Format(time.RFC3339Nano))
+				}
 				if args[1] == "plugin-tasks" && s.pluginTasks.Load() {
 					payload = `[{"id":1,"operation":"delete","plugin_id":"test-plugin"}]`
 				}
