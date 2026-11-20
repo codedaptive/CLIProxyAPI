@@ -9,7 +9,7 @@ A fork of [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyA
 
 **Connect the accounts. Route the requests. Keep the tools working.**
 
-[![Upstream baseline](https://img.shields.io/badge/upstream-v8.0.67-blue)](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.0.67)
+[![Upstream baseline](https://img.shields.io/badge/upstream-v8.0.80-blue)](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.0.80)
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue)](#prerequisites)
 [![License: MIT](https://img.shields.io/badge/license-MIT-success)](LICENSE)
 
@@ -133,6 +133,7 @@ Its setup guide includes the collector and HTTPS configuration.
 - [SDK usage](docs/sdk-usage.md) and [advanced integration](docs/sdk-advanced.md)
 - [Plugin examples](examples/plugin/README.md)
 - [Claude Code auto-mode compatibility](docs/claude-auto-mode.md)
+- [Antigravity request guard and bundled plugin](docs/antigravity-guard.md)
 - [LAN discovery](docs/lan-discovery.md)
 - [Upstream project reference](README_UPSTREAM.md), including provider and ecosystem links
 - Upstream translations: [简体中文](README_CN.md) · [日本語](README_JA.md)
@@ -149,7 +150,10 @@ with a separate configuration, credential directory, and test instance.
 
 ## Releases and updates
 
-The current source baseline is **upstream v8.0.67**. Build this repository to obtain
+The current source baseline is **upstream v8.0.80**, with the changes from
+[upstream PR #7701](https://github.com/router-for-me/CLIProxyAPI/pull/7701)
+integrated at commit `9c9ddb020c884efca9ab4e898a770380d19bd3cc`.
+That PR was unmerged upstream when integrated. Build this repository to obtain
 its fork changes; [upstream releases](https://github.com/router-for-me/CLIProxyAPI/releases)
 contain the upstream core. Check [Codedaptive releases](https://github.com/codedaptive/CLIProxyAPI/releases)
 for explicitly published fork artifacts.
