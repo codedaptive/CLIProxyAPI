@@ -14,8 +14,8 @@ func TestHomeOverlayKeepsLocalServerID(t *testing.T) {
 	s.cfg.Home.Enabled = true
 	client, _ := newHomePluginTaskTestClient(t, nil, 0)
 	for _, payload := range []string{
-		"server: {port: 8317}\nrequest-retry: 3\n",
-		"server: {port: 8317, server-id: " + suppliedID + "}\nrequest-retry: 3\n",
+		"server: {port: 8317}\nrequest-retry: 3\nplugins: {enabled: false}\n",
+		"server: {port: 8317, server-id: " + suppliedID + "}\nrequest-retry: 3\nplugins: {enabled: false}\n",
 	} {
 		remote, errParse := config.ParseConfigBytes([]byte(payload))
 		if errParse != nil {

@@ -28,6 +28,11 @@ func TestConfigV8PluginConfigShowsPublishedDefaults(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Startup may persist the server identity; GET requests must not change it.
+	baseline, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
 	host := pluginhost.New()
 	host.RegisterPluginForTest("guard", pluginapi.Plugin{Metadata: pluginapi.Metadata{Name: "guard", ConfigFields: []pluginapi.ConfigField{
 		{Name: "mode", Type: pluginapi.ConfigFieldTypeEnum, Default: "block"},
@@ -67,7 +72,7 @@ func TestConfigV8PluginConfigShowsPublishedDefaults(t *testing.T) {
 	if plugins := get("/v8/management/config/plugins"); plugins["configs"].(map[string]any)["guard"].(map[string]any)["google_guard"] != nil {
 		t.Fatal("defaults leaked into a read of the parent path")
 	}
-	if saved, _ := os.ReadFile(path); string(saved) != raw {
+	if saved, _ := os.ReadFile(path); string(saved) != string(baseline) {
 		t.Fatalf("config file changed:\n%s", saved)
 	}
 }
