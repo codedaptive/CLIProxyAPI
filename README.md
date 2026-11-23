@@ -9,7 +9,7 @@ A fork of [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyA
 
 **Connect the accounts. Route the requests. Keep the tools working.**
 
-[![Upstream baseline](https://img.shields.io/badge/upstream-v8.1.0-blue)](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.1.0)
+[![Upstream baseline](https://img.shields.io/badge/upstream-v8.1.1-blue)](https://github.com/router-for-me/CLIProxyAPI/releases/tag/v8.1.1)
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-blue)](#prerequisites)
 [![License: MIT](https://img.shields.io/badge/license-MIT-success)](LICENSE)
 
@@ -150,7 +150,7 @@ with a separate configuration, credential directory, and test instance.
 
 ## Releases and updates
 
-The current source baseline is **upstream v8.1.0**, with the changes from
+The current source baseline is **upstream v8.1.1**, with the changes from
 [upstream PR #7701](https://github.com/router-for-me/CLIProxyAPI/pull/7701)
 integrated at commit `9c9ddb020c884efca9ab4e898a770380d19bd3cc`.
 That PR was unmerged upstream when integrated. Build this repository to obtain
