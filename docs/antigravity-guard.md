@@ -80,3 +80,27 @@ on a separate port with synthetic credentials and local mock upstreams. Check
 known-phrase blocking, one-attempt handling of a generic 429, learned-rule reuse,
 normal completions, structured quota failures, and unchanged non-Antigravity
 routing. Keep production credentials and recorder queues out of those tests.
+
+## Claude Code system-only rewrites
+
+`docs/examples/claude-gemini-system-rewrites.json` contains explicit mappings
+verified with Claude Code 2.1.307 and Gemini Neon through v8.1.2. Set the guard
+plugin to `mode: rewrite`, `scope: [system]`, `use_default_keywords: false`,
+and load that JSON object as `custom_mappings`. Keep `google_guard: true` and
+the request-scoped 429 stop rule enabled. The normal default remains block mode.
+
+The mappings rephrase the agent identity and billing metadata label and preserve
+the requirement for clear authorization when using dual-use security tools.
+They do not claim the client is Google's native client. User messages, tool
+schemas, tool results, and assistant messages remain outside the rewrite scope.
+
+The isolated live check used the full built-in tool catalog, one credential,
+and a separate Claude Code profile. It completed a greeting, an actual Read
+call, and a resumed follow-up recalling the file contents. This validates that
+workflow and client version; future prompt changes can introduce new triggers.
+
+Run the mock regression against a built release with its bundled plugin:
+
+```sh
+python3 scripts/test-antigravity-guard.py /path/to/release-directory
+```

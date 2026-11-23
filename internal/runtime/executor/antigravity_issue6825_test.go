@@ -37,8 +37,15 @@ func TestIssue6825StreamToolIndicesAcrossChunks(t *testing.T) {
 	for _, chunk := range chunks {
 		for _, out := range sdktranslator.TranslateStream(context.Background(), sdktranslator.FormatAntigravity, sdktranslator.FormatOpenAI, "gemini-3-flash", original, translated, []byte(chunk), &param) {
 			for _, call := range ojson.GetBytes(out, "choices.0.delta.tool_calls").Array() {
-				indices = append(indices, call.Get("index").Int())
-				arguments = append(arguments, call.Get("function.arguments").String())
+				index := call.Get("index").Int()
+				if index < 0 || index > int64(len(arguments)) {
+					t.Fatalf("noncontiguous tool index: %d", index)
+				}
+				if index == int64(len(arguments)) {
+					indices = append(indices, index)
+					arguments = append(arguments, "")
+				}
+				arguments[index] += call.Get("function.arguments").String()
 			}
 		}
 	}
@@ -141,10 +148,18 @@ func (c *issue6825Conversation) callWithContext(ctx context.Context, payload []b
 			reasoning += delta.Get("reasoning_content").String()
 			for _, call := range delta.Get("tool_calls").Array() {
 				index := int(call.Get("index").Int())
-				if index != len(calls) {
-					c.t.Fatalf("unexpected new tool index %d, want %d", index, len(calls))
+				if index < 0 || index > len(calls) {
+					c.t.Fatalf("unexpected tool index %d, next index %d", index, len(calls))
 				}
-				calls = append(calls, map[string]any{"id": call.Get("id").String(), "type": "function", "function": map[string]string{"name": call.Get("function.name").String(), "arguments": call.Get("function.arguments").String()}})
+				if index == len(calls) {
+					calls = append(calls, map[string]any{"id": "", "type": "function", "function": map[string]string{"name": "", "arguments": ""}})
+				}
+				if id := call.Get("id").String(); id != "" {
+					calls[index]["id"] = id
+				}
+				function := calls[index]["function"].(map[string]string)
+				function["name"] += call.Get("function.name").String()
+				function["arguments"] += call.Get("function.arguments").String()
 			}
 		}
 	}

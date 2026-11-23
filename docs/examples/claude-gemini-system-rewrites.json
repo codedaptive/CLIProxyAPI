@@ -1,0 +1,8 @@
+{
+  "You are a Claude agent, built on Anthropic's Claude Agent SDK": "You are an AI coding agent running in a software development client",
+  "Anthropic's Claude Agent SDK": "the coding client SDK",
+  "You are Claude Code, Anthropic's official CLI for Claude.": "You are an AI coding assistant running in a command-line client.",
+  "You are Claude Code": "You are an AI coding assistant",
+  "Dual-use security tools (C2 frameworks, credential testing, exploit development) require clear authorization context": "Security tools with both legitimate and harmful uses (C2 frameworks, credential testing, exploit development) require clear authorization context",
+  "x-anthropic-billing-header": "client-billing-metadata"
+}
