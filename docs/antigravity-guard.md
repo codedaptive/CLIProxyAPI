@@ -1,6 +1,6 @@
 # Antigravity request guard
 
-This fork integrates upstream v8.1.1 and
+This fork integrates upstream v8.1.2 and
 [PR #7701](https://github.com/router-for-me/CLIProxyAPI/pull/7701), pinned to
 `9c9ddb020c884efca9ab4e898a770380d19bd3cc`. The PR was still open when integrated.
 Credit for the guard belongs to the PR author and the
