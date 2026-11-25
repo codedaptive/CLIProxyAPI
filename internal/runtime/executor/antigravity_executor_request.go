@@ -17,6 +17,7 @@ import (
 	"github.com/router-for-me/CLIProxyAPI/v8/internal/misc"
 	"github.com/router-for-me/CLIProxyAPI/v8/internal/registry"
 	"github.com/router-for-me/CLIProxyAPI/v8/internal/runtime/executor/helps"
+	antigravitygemini "github.com/router-for-me/CLIProxyAPI/v8/internal/translator/antigravity/gemini"
 	"github.com/router-for-me/CLIProxyAPI/v8/internal/util"
 	cliproxyauth "github.com/router-for-me/CLIProxyAPI/v8/sdk/cliproxy/auth"
 	cliproxyexecutor "github.com/router-for-me/CLIProxyAPI/v8/sdk/cliproxy/executor"
@@ -172,13 +173,14 @@ func (e *AntigravityExecutor) buildRequestForModelDoc(ctx context.Context, auth 
 	modelName := selection.ID
 	isAgent := geminiToAntigravityDocForAuth(doc, selection, projectID, auth, derivedSessionIDs...)
 	promptStructuredOutput := helps.PrepareAntigravityClaudeStructuredOutputDoc(modelName, doc)
+	antigravitygemini.NormalizeAntigravityRequestDoc(doc)
 
 	lowerModel := strings.ToLower(modelName)
 	useAntigravitySchema, isClaudeModel := antigravitySchemaSanitizationFlags(modelName)
 
-	// A matched variant uses the output limit from the same catalog as its ID and enum.
+	// A matched variant limits output using the same catalog as its ID and enum.
 	if selection.MaxOutputTokens > 0 {
-		_ = doc.Set("request.generationConfig.maxOutputTokens", selection.MaxOutputTokens)
+		helps.CapAntigravityMaxOutputTokensDoc(doc, selection.MaxOutputTokens, isClaudeModel)
 	} else if maxOut := doc.Get("request.generationConfig.maxOutputTokens"); maxOut.Exists() && maxOut.Type == ojson.Number {
 		modelInfo := registry.LookupModelInfo(modelName, "antigravity")
 		if modelInfo == nil && lowerModel != modelName {
@@ -186,17 +188,7 @@ func (e *AntigravityExecutor) buildRequestForModelDoc(ctx context.Context, auth 
 		}
 		if modelInfo != nil && modelInfo.MaxCompletionTokens > 0 {
 			if int(maxOut.Int()) > modelInfo.MaxCompletionTokens {
-				_ = doc.Set("request.generationConfig.maxOutputTokens", modelInfo.MaxCompletionTokens)
-				if isClaudeModel {
-					for _, budgetPath := range []string{
-						"request.generationConfig.thinkingConfig.thinkingBudget",
-						"request.generationConfig.thinkingConfig.thinking_budget",
-					} {
-						if budget := doc.Get(budgetPath); budget.Exists() && budget.Int() >= int64(modelInfo.MaxCompletionTokens) {
-							_ = doc.Set(budgetPath, modelInfo.MaxCompletionTokens-1)
-						}
-					}
-				}
+				helps.CapAntigravityMaxOutputTokensDoc(doc, modelInfo.MaxCompletionTokens, isClaudeModel)
 			}
 		}
 	}
@@ -986,7 +978,9 @@ func geminiToAntigravityDocForAuth(doc *ojson.Doc, selection cliproxyauth.Antigr
 
 	switch {
 	case isImageModel:
-		_ = doc.Set("requestId", generateImageGenRequestID())
+		if strings.TrimSpace(doc.Get("requestId").String()) == "" {
+			_ = doc.Set("requestId", generateImageGenRequestID())
+		}
 		if incomingSessionID != "" && authID != "" {
 			_ = doc.Set("request.sessionId", scopeIncomingAntigravitySessionID(authID, incomingSessionID, derivedSessionID))
 		}
@@ -1012,8 +1006,8 @@ func geminiToAntigravityDocForAuth(doc *ojson.Doc, selection cliproxyauth.Antigr
 		_ = doc.Set("request.sessionId", sessionID)
 		if reqType == "agent" {
 			helps.ApplyAntigravityAgentEnvelope(doc, auth, sessionID, modelName, selection.Enum)
-		} else {
-			_ = doc.Set("requestId", "agent-"+uuid.NewString())
+		} else if strings.TrimSpace(doc.Get("requestId").String()) == "" {
+			_ = doc.Set("requestId", reqType+"/"+uuid.NewString())
 		}
 	}
 

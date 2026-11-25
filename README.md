@@ -150,7 +150,9 @@ with a separate configuration, credential directory, and test instance.
 
 ## Releases and updates
 
-The current source baseline is **upstream v8.1.2**, with the changes from
+The current source baseline is **upstream v8.1.2 plus development fixes through
+[`f3cbdc5d`](https://github.com/router-for-me/CLIProxyAPI/commit/f3cbdc5d)**
+(November 24, 2026), with the changes from
 [upstream PR #7701](https://github.com/router-for-me/CLIProxyAPI/pull/7701)
 integrated at commit `9c9ddb020c884efca9ab4e898a770380d19bd3cc`.
 That PR was unmerged upstream when integrated. Build this repository to obtain
