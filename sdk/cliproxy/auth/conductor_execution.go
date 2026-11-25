@@ -345,7 +345,10 @@ func (m *Manager) Execute(ctx context.Context, providers []string, req cliproxye
 	ctx = coreusage.CaptureIdentity(ctx)
 	ctx = contextWithInFlightScope(ctx, scope)
 	ctx = withRequestRefusedAuths(ctx)
-	normalized := m.normalizeProviders(providers)
+	normalized, errEffort := filterAntigravityClaudeEffort(m.normalizeProviders(providers), req, opts)
+	if errEffort != nil {
+		return cliproxyexecutor.Response{}, errEffort
+	}
 	if len(normalized) == 0 {
 		return cliproxyexecutor.Response{}, &Error{Code: "provider_not_found", Message: "no provider supplied"}
 	}
@@ -526,7 +529,10 @@ func (m *Manager) ExecuteCount(ctx context.Context, providers []string, req clip
 	ctx = coreusage.CaptureIdentity(ctx)
 	ctx = contextWithInFlightScope(ctx, scope)
 	ctx = withRequestRefusedAuths(ctx)
-	normalized := m.normalizeProviders(providers)
+	normalized, errEffort := filterAntigravityClaudeEffort(m.normalizeProviders(providers), req, opts)
+	if errEffort != nil {
+		return cliproxyexecutor.Response{}, errEffort
+	}
 	if len(normalized) == 0 {
 		return cliproxyexecutor.Response{}, &Error{Code: "provider_not_found", Message: "no provider supplied"}
 	}
@@ -612,7 +618,10 @@ func (m *Manager) ExecuteStream(ctx context.Context, providers []string, req cli
 			defer unlockSession()
 		}
 	}
-	normalized := m.normalizeProviders(providers)
+	normalized, errEffort := filterAntigravityClaudeEffort(m.normalizeProviders(providers), req, opts)
+	if errEffort != nil {
+		return nil, errEffort
+	}
 	if len(normalized) == 0 {
 		return nil, &Error{Code: "provider_not_found", Message: "no provider supplied"}
 	}

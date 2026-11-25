@@ -42,6 +42,9 @@ func (e *AntigravityExecutor) prepareAntigravityRequest(ctx context.Context, aut
 	}
 	from, to := opts.SourceFormat, sdktranslator.FormatAntigravity
 	prepared := antigravityPreparedRequest{auth: auth}
+	if errEffort := cliproxyauth.ValidateAntigravityClaudeEffort(req.Model, req, opts); errEffort != nil {
+		return prepared, errEffort
+	}
 	useCredits := !countTokens && antigravityShouldBypassShortCooldown(ctx, e.cfg)
 	rejectCooldown := func(model string, err error) error {
 		prepared.cooldownRejected = true
