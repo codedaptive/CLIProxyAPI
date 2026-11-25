@@ -186,6 +186,10 @@ func (s *FileTokenStore) List(ctx context.Context) ([]*cliproxyauth.Auth, error)
 			return walkErr
 		}
 		if d.IsDir() {
+			// Plugin settings and reset history are not credentials.
+			if path != dir && strings.EqualFold(d.Name(), "plugin-state") {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		if !strings.HasSuffix(strings.ToLower(d.Name()), ".json") {
