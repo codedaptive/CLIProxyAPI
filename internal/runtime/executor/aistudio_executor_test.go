@@ -794,6 +794,9 @@ func TestAIStudioExecutorClaudeMalformedFunctionCallCancelAfterErrorRecordsCondu
 			var cancelOnce sync.Once
 			for chunk := range streamRes.Chunks {
 				if strings.Contains(string(chunk.Payload), "event: error") {
+					if chunk.Err == nil {
+						t.Error("client error event must carry the conductor failure atomically")
+					}
 					cancelOnce.Do(func() {
 						cancel()
 						close(canceled)

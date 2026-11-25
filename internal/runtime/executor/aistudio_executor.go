@@ -386,12 +386,23 @@ func (e *AIStudioExecutor) ExecuteStream(ctx context.Context, auth *cliproxyauth
 			}
 			for i := range lines {
 				spaced := ensureColonSpacedJSON(lines[i])
+				chunk := cliproxyexecutor.StreamChunk{Payload: spaced}
+				if _, isError := helps.TranslatedClaudeStreamErrorPayload(responseFormat, [][]byte{lines[i]}); isError && streamErr != nil {
+					// Record the terminal error in the same chunk as its client event.
+					// A client may cancel immediately after receiving that event.
+					helps.PublishTranslatedClaudeStreamFailure(ctx, streamErr, reporter, &streamUsage)
+					chunk.Err = streamErr
+					streamErr = nil
+				}
 				select {
-				case out <- cliproxyexecutor.StreamChunk{Payload: spaced}:
+				case out <- chunk:
 					if len(spaced) > 0 {
 						zeroOutputGuard.MarkEmitted()
 					}
 				case <-ctx.Done():
+					return false
+				}
+				if chunk.Err != nil {
 					return false
 				}
 			}

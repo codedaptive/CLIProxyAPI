@@ -198,7 +198,27 @@ func TestApplyPatchActualProviderErrorAndEOF(t *testing.T) {
 					if errExecuteStream != nil {
 						t.Fatal(errExecuteStream)
 					}
-					assertTask6FailedStream(t, stream.Chunks)
+					if provider == "antigravity" && mode == "empty" {
+						// Empty transport is rejected before any patch arguments exist.
+						errors := 0
+						for chunk := range stream.Chunks {
+							if len(chunk.Payload) != 0 {
+								t.Fatalf("empty upstream emitted payload: %s", chunk.Payload)
+							}
+							if chunk.Err != nil {
+								errors++
+								status, ok := chunk.Err.(interface{ StatusCode() int })
+								if !ok || status.StatusCode() != http.StatusBadGateway || chunk.Err.Error() != "upstream stream closed with zero output" {
+									t.Fatalf("expected empty-stream 502, got %v", chunk.Err)
+								}
+							}
+						}
+						if errors != 1 {
+							t.Fatalf("expected one terminal error, got %d", errors)
+						}
+					} else {
+						assertTask6FailedStream(t, stream.Chunks)
+					}
 				}
 			})
 		}

@@ -1156,7 +1156,7 @@ func TestIssue7513_AIStudioMixedStreamChunkAndHTTPResp(t *testing.T) {
 		for chunk := range streamRes.Chunks {
 			if chunk.Err != nil {
 				streamErr = chunk.Err
-				continue
+				// A terminal error can accompany its client-facing SSE event.
 			}
 			payload.Write(chunk.Payload)
 		}
